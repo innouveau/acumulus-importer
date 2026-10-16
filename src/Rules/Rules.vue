@@ -15,21 +15,23 @@ const { draft, dirty, add, remove, move, save } = useRuleDraft()
                 <button class="primary" :disabled="!dirty" @click="save">Opslaan</button>
             </div>
         </div>
-        <table class="rules">
-            <thead>
-                <tr>
-                    <th v-for="(column, index) in RULE_COLUMNS" :key="index">{{ column }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <Rule
-                    v-for="(rule, index) in draft"
-                    :key="rule.id"
-                    :rule="rule"
-                    @move="move(index, $event)"
-                    @remove="remove(index)"
-                />
-            </tbody>
-        </table>
+        <div class="table-scroll">
+            <table class="rules">
+                <thead>
+                    <tr>
+                        <th v-for="(column, index) in RULE_COLUMNS" :key="index">{{ column }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <Rule
+                        v-for="(rule, index) in draft"
+                        :key="rule.id"
+                        :rule="rule"
+                        @move="move(index, $event)"
+                        @remove="remove(index)"
+                    />
+                </tbody>
+            </table>
+        </div>
     </section>
 </template>

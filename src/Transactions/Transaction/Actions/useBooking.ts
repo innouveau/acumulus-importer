@@ -10,7 +10,7 @@ import { useRules } from '../../../Rules/useRules'
 import { useSettings } from '../../Upload/Account/useSettings'
 import { useTransactions } from '../../useTransactions'
 
-const { costHeadingId, costCenterId, accountId } = useAcumulus()
+const { costHeadingId, costCenterId, accountId, accountNames, costCenterNames } = useAcumulus()
 const { markDone } = useBooked()
 const { findRule } = useRules()
 const { settings } = useSettings()
@@ -25,13 +25,16 @@ const fail = (row: Row, message: string) => {
 }
 
 // Namen naar Acumulus-id's; zonder kostensoort-id valt Acumulus stilletjes terug op "Diversen"
+const notFound = (label: string, name: string, known: string[]) =>
+    `${label} "${name}" niet gevonden in Acumulus. Bekend: ${known.join(', ') || 'geen'}.`
+
 const resolveIds = (row: Row): BookingIds | string => {
     const accountid = accountId(settings.value.account)
-    if (!accountid) return `Rekening "${settings.value.account}" niet gevonden in Acumulus.`
+    if (!accountid) return notFound('Rekening', settings.value.account, accountNames())
     const costheadingid = costHeadingId(row.costheading)
     if (row.type === BookingType.Expense && !costheadingid) return `Kostensoort "${row.costheading}" niet gevonden in Acumulus.`
     const costcenterid = costCenterId(row.costcenter)
-    if (!costcenterid) return `Kostenplaats "${row.costcenter}" niet gevonden in Acumulus.`
+    if (!costcenterid) return notFound('Kostenplaats', row.costcenter, costCenterNames())
     return { accountid, costheadingid, costcenterid }
 }
 

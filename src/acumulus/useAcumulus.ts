@@ -36,4 +36,19 @@ const accountId = (name: string): number | null => {
     return account ? Number(account.accountid) : null
 }
 
-export const useAcumulus = () => ({ configured, loadError, loadConfig, loadPicklists, costHeadingId, costCenterId, accountId })
+// Voor foutmeldingen: welke namen Acumulus wél kent
+const accountNames = () => accounts.value.map((a) => [a.accountdescription, a.accountnumber].filter((v) => typeof v === 'string' && v).join(' / '))
+
+const costCenterNames = () => costCenters.value.map((c) => c.costcentername)
+
+export const useAcumulus = () => ({
+    configured,
+    loadError,
+    loadConfig,
+    loadPicklists,
+    costHeadingId,
+    costCenterId,
+    accountId,
+    accountNames,
+    costCenterNames,
+})

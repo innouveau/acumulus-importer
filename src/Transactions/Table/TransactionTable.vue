@@ -7,14 +7,16 @@ const { visibleRows } = useTransactions()
 </script>
 
 <template>
-    <table>
-        <thead>
-            <tr>
-                <th v-for="(column, index) in TRANSACTION_COLUMNS" :key="index" :class="{ num: column === AMOUNT_COLUMN }">{{ column }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <Transaction v-for="row in visibleRows" :key="row.tx.key" :row="row" />
-        </tbody>
-    </table>
+    <div class="table-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th v-for="(column, index) in TRANSACTION_COLUMNS" :key="index" :class="{ num: column === AMOUNT_COLUMN }">{{ column }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <Transaction v-for="row in visibleRows" :key="row.tx.key" :row="row" />
+            </tbody>
+        </table>
+    </div>
 </template>

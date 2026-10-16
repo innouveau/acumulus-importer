@@ -4,6 +4,7 @@ import type { Row } from './Transaction/transaction.types'
 import { parseTriodosCsv } from './Upload/parseTriodosCsv'
 import { createRow, isBookable } from './Transaction/transaction.utils'
 import { findMatchingRule } from '../Rules/rule.utils'
+import { matchesSearch } from './TableActions/Search/search.utils'
 import { useBooked } from './useBooked'
 import { useRules } from '../Rules/useRules'
 
@@ -16,6 +17,7 @@ const rows = ref<Row[]>([])
 const selected = ref<Set<string>>(new Set())
 const category = ref<Category>(Category.Normal)
 const hideDone = ref(false)
+const search = ref('')
 
 const importFile = async (file: File) => {
     fileName.value = file.name
@@ -27,7 +29,9 @@ const importFile = async (file: File) => {
     selected.value = new Set(rows.value.filter((row) => isBookable(row) && !isDone(row)).map((row) => row.tx.key))
 }
 
-const visibleRows = computed(() => rows.value.filter((row) => row.category === category.value && !(hideDone.value && isDone(row))))
+const visibleRows = computed(() =>
+    rows.value.filter((row) => row.category === category.value && !(hideDone.value && isDone(row)) && matchesSearch(row, search.value)),
+)
 
 const selectedBookable = computed(() => visibleRows.value.filter((row) => selected.value.has(row.tx.key) && isBookable(row) && !isDone(row)))
 
@@ -48,6 +52,7 @@ export const useTransactions = () => ({
     rows,
     category,
     hideDone,
+    search,
     importFile,
     visibleRows,
     selectedBookable,
