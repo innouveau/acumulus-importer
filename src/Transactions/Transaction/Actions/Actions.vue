@@ -49,5 +49,8 @@ const markAsDone = () => {
         <button v-else class="link" @click="markAsDone">markeer als gedaan</button>
     </template>
     <div v-if="row.message && !matching" class="message" :class="row.status">{{ row.message }}</div>
-    <InvoiceDialog v-if="matching" :row="row" @close="matching = false" />
+    <!-- Buiten de (sticky) tabelcel renderen, anders valt de popup achter andere rijen -->
+    <Teleport to="body">
+        <InvoiceDialog v-if="matching" :row="row" @close="matching = false" />
+    </Teleport>
 </template>

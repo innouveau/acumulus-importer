@@ -8,6 +8,9 @@
     --ok: #1f8a4c;
     --warn: #b7791f;
     --error: #c53030;
+    /* Schaduw langs de vaste kolommen (de lijn zelf is een border) */
+    --edge-left: 4px 0 6px -4px rgba(0, 0, 0, 0.06);
+    --edge-right: -4px 0 6px -4px rgba(0, 0, 0, 0.06);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 14px;
     color: var(--text);
@@ -37,10 +40,14 @@ code { background: #eef0f3; padding: 1px 4px; border-radius: 3px; }
 .notice.error { background: #fdecec; color: var(--error); }
 
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; }
-/* De tabel vult de rest van de kaart en scrolt zelf: kop en subtotaal blijven staan */
+/* De tabel vult de rest van de kaart en scrolt zelf: de kopregel blijft staan */
 .table-scroll { flex: 1; min-height: 0; overflow: auto; }
-.table-scroll thead th { position: sticky; top: 0; z-index: 1; background: var(--card); }
-.table-scroll tfoot td { position: sticky; bottom: 0; background: var(--card); }
+.table-scroll thead th { position: sticky; top: 0; z-index: 2; background: var(--card); }
+/* Eerste kolom (selectievakje) en laatste kolom (acties) blijven staan bij horizontaal scrollen */
+.table-scroll :is(th, td):first-child { position: sticky; left: 0; z-index: 1; background: var(--card); border-right: 1px solid var(--border); box-shadow: var(--edge-left); }
+.table-scroll :is(th, td):last-child { position: sticky; right: 0; z-index: 1; background: var(--card); border-left: 1px solid var(--border); box-shadow: var(--edge-right); }
+/* Hoekcellen van de kopregel liggen boven alles */
+.table-scroll thead th:is(:first-child, :last-child) { z-index: 3; }
 .upload { display: flex; align-items: center; gap: 16px; }
 .summary { padding: 8px 16px; }
 .summary-stats { display: flex; gap: 24px; flex-wrap: wrap; }
@@ -57,13 +64,16 @@ code { background: #eef0f3; padding: 1px 4px; border-radius: 3px; }
 .table-filters { display: flex; align-items: center; gap: 16px; }
 .search { width: 280px; padding: 6px 10px; }
 .table-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
-table { width: 100%; border-collapse: collapse; }
+/* separate i.p.v. collapse: anders tekenen sticky cellen hun randen niet betrouwbaar */
+table { width: 100%; border-collapse: separate; border-spacing: 0; }
 th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 6px; border-bottom: 1px solid var(--border); }
 td { padding: 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
-.subtotal td { font-weight: 600; border-top: 2px solid var(--border); border-bottom: none; }
-tr.done td { opacity: 0.5; }
-tr.done td.actions { opacity: 1; }
-tr.unmatched td:first-child { box-shadow: inset 3px 0 var(--warn); }
+/* Label loopt over de lege cellen ernaast heen, zonder de eerste kolom breed te maken */
+/* Subtotaal onder de kaart, buiten de scrollende tabel */
+.subtotal-bar { flex-shrink: 0; display: flex; gap: 12px; margin-top: -8px; padding: 0 17px; }
+/* Alleen de inhoud vervagen: de cel zelf blijft wit, ook als hij sticky over andere cellen schuift */
+tr.done td:not(.actions) > * { opacity: 0.5; }
+tr.unmatched td:first-child { box-shadow: inset 3px 0 var(--warn), var(--edge-left); }
 .num { text-align: right; }
 .nowrap { white-space: nowrap; }
 .out { color: var(--error); }

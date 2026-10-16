@@ -3,6 +3,7 @@ import { useTransactions } from './useTransactions'
 import CategoryTabs from './CategoryTabs/CategoryTabs.vue'
 import TableActions from './TableActions/TableActions.vue'
 import TransactionTable from './Table/TransactionTable.vue'
+import Subtotal from './Subtotal/Subtotal.vue'
 import Summary from './Summary/Summary.vue'
 import Upload from './Upload/Upload.vue'
 
@@ -16,5 +17,6 @@ const { rows } = useTransactions()
         <TableActions />
         <TransactionTable />
     </section>
+    <Subtotal v-if="rows.length" />
     <Summary v-if="rows.length" />
 </template>
