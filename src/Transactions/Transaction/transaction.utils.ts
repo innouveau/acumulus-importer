@@ -15,6 +15,7 @@ const TAX_AUTHORITY = 'belastingdienst'
 export const categorize = (tx: Transaction, rule: Rule | undefined): Category => {
     if (tx.direction === Direction.Credit) return Category.Sales
     if (normalize(`${tx.counterparty} ${tx.description}`).includes(TAX_AUTHORITY)) return Category.Vat
+    if (rule?.type === BookingType.Private) return Category.Private
     return rule ? Category.Normal : Category.Purchase
 }
 
