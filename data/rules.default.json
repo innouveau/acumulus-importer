@@ -1,0 +1,16 @@
+[
+  {"id": "huur", "label": "Huur", "match": "huur", "type": "expense", "costheading": "Huisvesting", "vatrate": 21, "vattype": 1, "note": ""},
+  {"id": "mandate", "label": "Mandate", "match": "mandate", "type": "expense", "costheading": "Hosting", "vatrate": 21, "vattype": 1, "note": ""},
+  {"id": "boodschappen", "label": "Declaratie / boodschappen", "match": "boodschappen", "type": "expense", "costheading": "Representatie & verteer (eten & drinken)", "vatrate": 9, "vattype": 1, "note": "9%"},
+  {"id": "declaratie", "label": "Declaratie", "match": "declaratie", "type": "expense", "costheading": "Diversen", "vatrate": null, "vattype": 1, "note": "Let op %: kies per declaratie het btw-tarief"},
+  {"id": "acumulus", "label": "Acumulus", "match": "acumulus, siel", "type": "expense", "costheading": "Contributies & abonnementen", "vatrate": 21, "vattype": 1, "note": ""},
+  {"id": "google", "label": "Google", "match": "google", "type": "expense", "costheading": "Contributies & abonnementen", "vatrate": 0, "vattype": 3, "supplierCountry": "IE", "supplierVatnumber": "IE6388047V", "note": "Levering uit EU: btw verlegd, 0%"},
+  {"id": "pasbijdrage", "label": "Pasbijdrage", "match": "pasbijdrage", "type": "expense", "costheading": "Bankkosten", "vatrate": -1, "vattype": 1, "note": "0%"},
+  {"id": "kosten", "label": "Kosten (bank)", "match": "kosten", "type": "expense", "costheading": "Bankkosten", "vatrate": -1, "vattype": 1, "note": "0%"},
+  {"id": "dewit", "label": "De Wit", "match": "de wit", "type": "expense", "costheading": "Verzekeringen", "vatrate": -1, "vattype": 1, "note": "0%"},
+  {"id": "thuiswerk", "label": "Thuiswerkvergoeding", "match": "thuiswerk", "type": "expense", "costheading": "Thuiswerkvergoeding", "vatrate": -1, "vattype": 1, "note": "0%"},
+  {"id": "freelance", "label": "Freelance", "match": "freelance", "type": "expense", "costheading": "Contributies & abonnementen", "vatrate": 21, "vattype": 1, "note": ""},
+  {"id": "arjen", "label": "Arjen", "match": "arjen, duinhouwer", "field": "counterparty", "type": "private", "costheading": "", "vatrate": null, "vattype": 1, "note": ""},
+  {"id": "jeroen", "label": "Jeroen", "match": "jeroen, breen", "field": "counterparty", "type": "private", "costheading": "", "vatrate": null, "vattype": 1, "note": ""},
+  {"id": "belasting", "label": "Belasting (BTW-afdracht)", "match": "belastingdienst", "type": "manual", "costheading": "", "vatrate": null, "vattype": 1, "note": "BTW-afdracht kan niet via de API: boek deze in Acumulus zelf"}
+]

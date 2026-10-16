@@ -1,0 +1,57 @@
+import { CostHeading } from './costHeading.enum'
+
+// Groepering zoals in de Acumulus-dropdown
+export const COST_HEADING_GROUPS: { label: string; options: CostHeading[] }[] = [
+    {
+        label: 'Bijzondere kostensoorten',
+        options: [
+            CostHeading.Autokosten,
+            CostHeading.Bedrijfsgebouwen,
+            CostHeading.BijtellingVervoermiddel,
+            CostHeading.BijtellingFiets,
+            CostHeading.BijtellingMotorfiets,
+            CostHeading.Cursussen,
+            CostHeading.Fietskosten,
+            CostHeading.Giften,
+            CostHeading.Goodwill,
+            CostHeading.IbAftrekBtwBijtelling,
+            CostHeading.Inkopen,
+            CostHeading.Kilometervergoeding,
+            CostHeading.Relatiegeschenken,
+            CostHeading.Representatie,
+            CostHeading.Vervoermiddelen,
+        ],
+    },
+    {
+        label: 'Vrije kostensoorten',
+        options: [
+            CostHeading.Accountant,
+            CostHeading.Koersverschillen,
+            CostHeading.Bankkosten,
+            CostHeading.Contributies,
+            CostHeading.Diversen,
+            CostHeading.Gereedschappen,
+            CostHeading.Huisvesting,
+            CostHeading.Inhuur,
+            CostHeading.Inventaris,
+            CostHeading.Kantoorbenodigdheden,
+            CostHeading.Materialen,
+            CostHeading.PersoneelLonen,
+            CostHeading.PersoneelUitkeringen,
+            CostHeading.PersoneelOverig,
+            CostHeading.PersoneelPensioen,
+            CostHeading.PersoneelSociaal,
+            CostHeading.Porti,
+            CostHeading.Reclame,
+            CostHeading.Reiskosten,
+            CostHeading.Rente,
+            CostHeading.Telefoon,
+            CostHeading.Vakliteratuur,
+            CostHeading.Verzekeringen,
+        ],
+    },
+    {
+        label: 'Eigen kostensoorten',
+        options: [CostHeading.Hosting, CostHeading.Thuiswerkvergoeding],
+    },
+]

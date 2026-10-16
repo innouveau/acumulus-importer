@@ -1,0 +1,8 @@
+node_modules
+dist
+.env.local
+data/rules.json
+data/settings.json
+data/booked.json
+.DS_Store
+.env
