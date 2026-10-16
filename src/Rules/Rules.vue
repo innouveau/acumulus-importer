@@ -7,7 +7,7 @@ const { draft, dirty, add, remove, move, save } = useRuleDraft()
 </script>
 
 <template>
-    <section class="card">
+    <section class="card fill">
         <div class="table-actions">
             <p class="muted">De eerste regel waarvan een zoekterm gevonden wordt, wint. Meerdere zoektermen scheid je met komma's.</p>
             <div>

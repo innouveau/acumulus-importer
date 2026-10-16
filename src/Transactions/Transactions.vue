@@ -11,7 +11,7 @@ const { rows } = useTransactions()
 
 <template>
     <Upload />
-    <section v-if="rows.length" class="card">
+    <section v-if="rows.length" class="card fill">
         <CategoryTabs />
         <TableActions />
         <TransactionTable />
