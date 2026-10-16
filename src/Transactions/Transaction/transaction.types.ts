@@ -25,6 +25,9 @@ export interface Row {
     costcenter: CostCenter
     vatrate: VatRate | null
     vattype: VatType
+    // Activeren en afschrijven in plaats van in één keer als kosten
+    investment: boolean
+    writeOffYears: number
     description: string
     status: RowStatus
     message: string

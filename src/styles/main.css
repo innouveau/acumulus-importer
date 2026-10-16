@@ -71,6 +71,9 @@ tr.unmatched td:first-child { box-shadow: inset 3px 0 var(--warn); }
 .muted { color: var(--muted); }
 .note { font-size: 12px; color: var(--warn); margin-top: 2px; max-width: 200px; }
 .actions { min-width: 140px; }
+.investment-years { display: block; margin-top: 4px; font-size: 12px; }
+.investment-years input { width: 52px; }
+.hint { font-size: 12px; color: var(--warn); margin-top: 4px; }
 .message { font-size: 12px; margin-top: 4px; max-width: 280px; }
 .message.ok { color: var(--ok); }
 .message.error { color: var(--error); }

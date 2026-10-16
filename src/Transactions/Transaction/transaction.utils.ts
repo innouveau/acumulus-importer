@@ -1,3 +1,4 @@
+import { DEFAULT_WRITE_OFF_YEARS, MAX_WRITE_OFF_YEARS, MIN_WRITE_OFF_YEARS } from './Investment/investment.constants'
 import { DEFAULT_VAT_RATE, DEFAULT_VAT_TYPE } from './Vat/vat.constants'
 import { BookingType } from './BookingType/bookingType.enum'
 import { Category } from '../CategoryTabs/category.enum'
@@ -37,6 +38,8 @@ export const createRow = (tx: Transaction, rule: Rule | undefined): Row => {
         costcenter: CostCenter.Algemeen,
         vatrate: null,
         vattype: DEFAULT_VAT_TYPE,
+        investment: false,
+        writeOffYears: DEFAULT_WRITE_OFF_YEARS,
         description: [tx.counterparty, tx.description].filter(Boolean).join(' – ').slice(0, DESCRIPTION_MAX),
         status: RowStatus.Idle,
         message: '',
@@ -50,11 +53,20 @@ export const createRow = (tx: Transaction, rule: Rule | undefined): Row => {
     return row
 }
 
-export const isBookable = (row: Row): boolean => {
-    if (row.type === BookingType.Expense) return Boolean(row.costheading) && row.vatrate !== null
-    return row.type === BookingType.Private
+// Soorten die via de API geboekt worden (de rest handel je in Acumulus zelf af)
+export const isApiBooking = (row: Row): boolean => {
+    return row.type === BookingType.Expense || row.type === BookingType.Private
 }
 
-export const hasCostCenter = (row: Row): boolean => {
-    return row.type === BookingType.Expense || row.type === BookingType.Private
+// Wat nog ingevuld moet worden voordat de rij geboekt kan worden
+export const missingFields = (row: Row): string[] => {
+    if (row.type !== BookingType.Expense) return []
+    const invalidYears = row.investment && !(row.writeOffYears >= MIN_WRITE_OFF_YEARS && row.writeOffYears <= MAX_WRITE_OFF_YEARS)
+    return [!row.costheading && 'kostensoort', row.vatrate === null && 'btw-tarief', invalidYears && 'afschrijvingsjaren'].filter(
+        (field): field is string => Boolean(field),
+    )
+}
+
+export const isBookable = (row: Row): boolean => {
+    return isApiBooking(row) && !missingFields(row).length
 }

@@ -27,6 +27,10 @@ const privateTransfer = (row: Row, ids: BookingIds): BookingRequest => {
     }
 }
 
+// Investering: activeren en afschrijven; terugkerende boekingen zijn dan niet toegestaan
+const investmentParams = (row: Row) =>
+    row.investment ? { investment: 1, writeoffinyears: row.writeOffYears, recurrences: 0, monthly: 0 } : { investment: 0 }
+
 const expense = (row: Row, rule: Rule | undefined, ids: BookingIds): BookingRequest => {
     const { tx } = row
     // Terugbetaling (bij) = negatieve kosten
@@ -51,6 +55,7 @@ const expense = (row: Row, rule: Rule | undefined, ids: BookingIds): BookingRequ
                     accountnumber: ids.accountid,
                     paymentstatus: PaymentStatus.Paid,
                     paymentdate: tx.date,
+                    ...investmentParams(row),
                 },
             },
         },
