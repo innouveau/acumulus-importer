@@ -2,6 +2,7 @@
 import { useSettings } from './Account/useSettings'
 import { useTransactions } from '../useTransactions'
 import AccountSelect from './Account/AccountSelect.vue'
+import ExportButton from './Export/ExportButton.vue'
 
 const { settings } = useSettings()
 const { fileName, transactionCount, importFile } = useTransactions()
@@ -23,5 +24,6 @@ const onFile = (event: Event) => {
             <AccountSelect v-model="settings.account" />
         </label>
         <span v-if="fileName" class="muted">{{ transactionCount }} transacties ingelezen</span>
+        <ExportButton v-if="fileName" class="upload-export" />
     </section>
 </template>

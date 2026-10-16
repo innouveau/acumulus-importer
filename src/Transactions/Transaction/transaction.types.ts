@@ -15,6 +15,8 @@ export interface Transaction {
     counterparty: string
     counterpartyAccount: string
     description: string
+    // Originele CSV-velden, om ongewijzigd terug te exporteren
+    raw: string[]
 }
 
 export interface Row {

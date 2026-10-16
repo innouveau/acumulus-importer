@@ -29,13 +29,23 @@ const toTransaction = (row: string[]): Transaction => {
         // "INGBNL2A NL89INGB0005138060" -> alleen de IBAN
         counterpartyAccount: cell(COL.counterpartyAccount).split(/\s+/).pop() ?? '',
         description: cell(COL.description).replace(/\s+/g, ' '),
+        raw: row,
     }
     // Saldo erbij, zodat twee gelijke transacties op dezelfde dag toch uniek zijn
     tx.key = [tx.date, tx.direction, tx.amount.toFixed(2), tx.counterparty, tx.description, cell(COL.balance)].join('|')
     return tx
 }
 
-export const parseTriodosCsv = (text: string): Transaction[] => {
-    const rows = Papa.parse<string[]>(text.trim(), { skipEmptyLines: true }).data
-    return rows.filter((row) => DATE_PATTERN.test(row[COL.date]?.trim() ?? '')).map(toTransaction)
+export interface ParsedCsv {
+    transactions: Transaction[]
+    // Regeleinde van het bestand, zodat een export hetzelfde formaat heeft
+    linebreak: string
+}
+
+export const parseTriodosCsv = (text: string): ParsedCsv => {
+    const result = Papa.parse<string[]>(text.trim(), { skipEmptyLines: true })
+    return {
+        transactions: result.data.filter((row) => DATE_PATTERN.test(row[COL.date]?.trim() ?? '')).map(toTransaction),
+        linebreak: result.meta.linebreak || '\n',
+    }
 }

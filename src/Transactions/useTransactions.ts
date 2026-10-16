@@ -16,6 +16,7 @@ const { isDone } = useBooked()
 const { invoices } = useInvoices()
 
 const fileName = ref('')
+const linebreak = ref('\n')
 const transactionCount = ref(0)
 const rows = ref<Row[]>([])
 const selected = ref<Set<string>>(new Set())
@@ -25,7 +26,8 @@ const search = ref('')
 
 const importFile = async (file: File) => {
     fileName.value = file.name
-    const transactions = parseTriodosCsv(await file.text())
+    const { transactions, linebreak: fileLinebreak } = parseTriodosCsv(await file.text())
+    linebreak.value = fileLinebreak
     transactionCount.value = transactions.length
     // Regels opnieuw ophalen, zodat aanpassingen in data/ meteen meetellen
     await loadRules()
@@ -57,6 +59,9 @@ const visibleRows = computed(() =>
 
 const selectedBookable = computed(() => visibleRows.value.filter((row) => selected.value.has(row.tx.key) && isBookable(row) && !isDone(row)))
 
+// Alles wat nog niet geboekt of afgehandeld is, over alle tabjes heen
+const remainingRows = computed(() => rows.value.filter((row) => !isDone(row)))
+
 const openCount = (cat: Category) => rows.value.filter((row) => row.category === cat && !isDone(row)).length
 
 const isSelected = (row: Row) => selected.value.has(row.tx.key)
@@ -70,6 +75,8 @@ const setSelected = (row: Row, value: boolean) => {
 
 export const useTransactions = () => ({
     fileName,
+    linebreak,
+    remainingRows,
     transactionCount,
     rows,
     category,

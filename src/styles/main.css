@@ -38,6 +38,7 @@ code { background: #eef0f3; padding: 1px 4px; border-radius: 3px; }
 .table-scroll thead th { position: sticky; top: 0; z-index: 1; background: var(--card); }
 .table-scroll tfoot td { position: sticky; bottom: 0; background: var(--card); }
 .upload { display: flex; align-items: center; gap: 16px; }
+.upload-export { margin-left: auto; }
 .file input { display: none; }
 .file span { display: inline-block; padding: 10px 16px; border: 2px dashed var(--border); border-radius: 8px; cursor: pointer; }
 .file span:hover { border-color: var(--accent); }
