@@ -13,7 +13,7 @@ import InvestmentField from './Investment/InvestmentField.vue'
 import RuleSelect from './Rule/RuleSelect.vue'
 import SelectCheckbox from './Select/SelectCheckbox.vue'
 import type { Row } from './transaction.types'
-import { isApiBooking } from './transaction.utils'
+import { usesCostCenter } from './transaction.utils'
 import VatRateSelect from './Vat/VatRateSelect.vue'
 import VatTypeSelect from './Vat/VatTypeSelect.vue'
 
@@ -33,7 +33,7 @@ const isExpense = computed(() => props.row.type === BookingType.Expense)
         <td><RuleSelect :row="row" :disabled="done" /></td>
         <td><BookingTypeSelect v-model="row.type" :disabled="done" /></td>
         <td><CostHeadingSelect v-if="isExpense" v-model="row.costheading" :disabled="done" /></td>
-        <td><CostCenterSelect v-if="isApiBooking(row)" v-model="row.costcenter" :disabled="done" /></td>
+        <td><CostCenterSelect v-if="usesCostCenter(row)" v-model="row.costcenter" :disabled="done" /></td>
         <td class="nowrap">
             <template v-if="isExpense">
                 <VatRateSelect v-model="row.vatrate" :disabled="done" />

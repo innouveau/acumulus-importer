@@ -62,6 +62,12 @@ const expense = (row: Row, rule: Rule | undefined, ids: BookingIds): BookingRequ
     }
 }
 
+// Factuur staat al in Acumulus: alleen op betaald zetten, op de betaaldatum uit de bank
+export const invoicePayment = (row: Row): BookingRequest => ({
+    resource: RESOURCES.setPaymentStatus,
+    params: { token: row.invoice?.token, paymentstatus: PaymentStatus.Paid, paymentdate: row.tx.date },
+})
+
 export const buildBookingRequest = (row: Row, rule: Rule | undefined, ids: BookingIds): BookingRequest => {
     return row.type === BookingType.Private ? privateTransfer(row, ids) : expense(row, rule, ids)
 }

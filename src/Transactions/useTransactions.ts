@@ -7,9 +7,13 @@ import { findMatchingRule } from '../Rules/rule.utils'
 import { matchesSearch } from './TableActions/Search/search.utils'
 import { useBooked } from './useBooked'
 import { useRules } from '../Rules/useRules'
+import { isStrongMatch } from './Transaction/Invoice/invoice.utils'
+import { useInvoices } from './Transaction/Invoice/useInvoices'
+import { BookingType } from './Transaction/BookingType/bookingType.enum'
 
 const { rules, loadRules } = useRules()
 const { isDone } = useBooked()
+const { invoices } = useInvoices()
 
 const fileName = ref('')
 const transactionCount = ref(0)
@@ -26,7 +30,25 @@ const importFile = async (file: File) => {
     // Regels opnieuw ophalen, zodat aanpassingen in data/ meteen meetellen
     await loadRules()
     rows.value = transactions.map((tx) => createRow(tx, findMatchingRule(rules.value, tx)))
+    linkInvoices()
     selected.value = new Set(rows.value.filter((row) => isBookable(row) && !isDone(row)).map((row) => row.tx.key))
+}
+
+// Factuur die al aan een andere rij hangt, kan niet nog eens gekoppeld worden
+const linkedTokens = (except?: Row) =>
+    new Set(rows.value.filter((row) => row !== except && row.invoice).map((row) => row.invoice!.token))
+
+// Koppelt betalingen automatisch als factuurnummer én bedrag precies kloppen
+const linkInvoices = () => {
+    for (const row of rows.value) {
+        if (row.type !== BookingType.InvoicePayment || row.invoice || isDone(row)) continue
+        const taken = linkedTokens()
+        const matches = invoices.value.filter((invoice) => !taken.has(invoice.token) && isStrongMatch(invoice, row.tx))
+        if (matches.length === 1) {
+            row.invoice = matches[0]
+            setSelected(row, true)
+        }
+    }
 }
 
 const visibleRows = computed(() =>
@@ -54,6 +76,8 @@ export const useTransactions = () => ({
     hideDone,
     search,
     importFile,
+    linkInvoices,
+    linkedTokens,
     visibleRows,
     selectedBookable,
     openCount,

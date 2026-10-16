@@ -3,7 +3,8 @@ import { callAcumulus } from '../../../acumulus/client'
 import { BookingType } from '../BookingType/bookingType.enum'
 import { RowStatus } from './rowStatus.enum'
 import type { Row } from '../transaction.types'
-import { buildBookingRequest, type BookingIds } from './booking.utils'
+import { buildBookingRequest, invoicePayment, type BookingIds } from './booking.utils'
+import type { BookingRequest } from '../../../acumulus/acumulus.types'
 import { useAcumulus } from '../../../acumulus/useAcumulus'
 import { useBooked } from '../../useBooked'
 import { useRules } from '../../../Rules/useRules'
@@ -40,24 +41,43 @@ const resolveIds = (row: Row): BookingIds | string => {
 
 const successMessage = (entryid?: string) => (testmode.value ? 'Test geslaagd (niets geboekt)' : `Geboekt op ${entryid ?? '?'}`)
 
-const book = async (row: Row) => {
+// Factuurbetaling heeft geen rekening/kostensoort nodig; de rest wel
+const buildRequest = (row: Row): BookingRequest | string => {
+    if (row.type === BookingType.InvoicePayment) return invoicePayment(row)
     const ids = resolveIds(row)
-    if (typeof ids === 'string') return fail(row, ids)
+    return typeof ids === 'string' ? ids : buildBookingRequest(row, findRule(row.ruleId), ids)
+}
+
+const entryIdFrom = (data: Record<string, unknown>, row: Row) => {
+    const entry = (data.expense ?? data.transfer ?? data.invoice) as { entryid?: unknown } | undefined
+    const entryid = typeof entry?.entryid === 'string' || typeof entry?.entryid === 'number' ? String(entry.entryid) : ''
+    return entryid || row.invoice?.entryid || undefined
+}
+
+// Geeft true terug als het gelukt is
+const book = async (row: Row): Promise<boolean> => {
+    const request = buildRequest(row)
+    if (typeof request === 'string') {
+        fail(row, request)
+        return false
+    }
 
     row.status = RowStatus.Busy
     row.message = ''
-    const { resource, params } = buildBookingRequest(row, findRule(row.ruleId), ids)
+    const { resource, params } = request
     try {
         const result = await callAcumulus(resource, params, testmode.value)
-        const entryid = ((result.data.expense ?? result.data.transfer) as { entryid?: string } | undefined)?.entryid
+        const entryid = entryIdFrom(result.data, row)
         row.status = result.ok ? RowStatus.Ok : RowStatus.Error
         row.message = [result.ok ? successMessage(entryid) : '', ...result.messages].filter(Boolean).join(' · ')
         if (result.ok && !testmode.value) {
             markDone(row, entryid)
             setSelected(row, false)
         }
+        return result.ok
     } catch (error) {
         fail(row, String(error))
+        return false
     }
 }
 

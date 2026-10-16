@@ -8,6 +8,8 @@ import { useAcumulus } from './acumulus/useAcumulus'
 import { useBooked } from './Transactions/useBooked'
 import { useRules } from './Rules/useRules'
 import { useSettings } from './Transactions/Upload/Account/useSettings'
+import { useInvoices } from './Transactions/Transaction/Invoice/useInvoices'
+import { useTransactions } from './Transactions/useTransactions'
 import { View } from './view.enum'
 
 const view = ref<View>(View.Transactions)
@@ -16,10 +18,14 @@ const { configured, loadConfig, loadPicklists } = useAcumulus()
 const { loadRules } = useRules()
 const { loadSettings } = useSettings()
 const { loadBooked } = useBooked()
+const { loadInvoices } = useInvoices()
+const { linkInvoices } = useTransactions()
 
 onMounted(async () => {
     await Promise.all([loadConfig(), loadRules(), loadSettings(), loadBooked()])
-    if (configured.value) await loadPicklists()
+    if (!configured.value) return
+    await Promise.all([loadPicklists(), loadInvoices()])
+    linkInvoices()
 })
 </script>
 

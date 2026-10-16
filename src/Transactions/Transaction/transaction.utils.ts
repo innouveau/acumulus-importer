@@ -40,6 +40,7 @@ export const createRow = (tx: Transaction, rule: Rule | undefined): Row => {
         vattype: DEFAULT_VAT_TYPE,
         investment: false,
         writeOffYears: DEFAULT_WRITE_OFF_YEARS,
+        invoice: null,
         description: [tx.counterparty, tx.description].filter(Boolean).join(' – ').slice(0, DESCRIPTION_MAX),
         status: RowStatus.Idle,
         message: '',
@@ -50,16 +51,26 @@ export const createRow = (tx: Transaction, rule: Rule | undefined): Row => {
         row.type = BookingType.Expense
         row.vatrate = DEFAULT_VAT_RATE
     }
+    if (row.category === Category.Sales) {
+        // Betaling van een klant: koppelen aan een openstaande factuur in Acumulus
+        row.type = BookingType.InvoicePayment
+    }
     return row
 }
 
 // Soorten die via de API geboekt worden (de rest handel je in Acumulus zelf af)
 export const isApiBooking = (row: Row): boolean => {
+    return [BookingType.Expense, BookingType.Private, BookingType.InvoicePayment].includes(row.type)
+}
+
+// Kostenplaats speelt alleen bij kosten en privé-boekingen
+export const usesCostCenter = (row: Row): boolean => {
     return row.type === BookingType.Expense || row.type === BookingType.Private
 }
 
 // Wat nog ingevuld moet worden voordat de rij geboekt kan worden
 export const missingFields = (row: Row): string[] => {
+    if (row.type === BookingType.InvoicePayment) return row.invoice ? [] : ['factuur']
     if (row.type !== BookingType.Expense) return []
     const invalidYears = row.investment && !(row.writeOffYears >= MIN_WRITE_OFF_YEARS && row.writeOffYears <= MAX_WRITE_OFF_YEARS)
     return [!row.costheading && 'kostensoort', row.vatrate === null && 'btw-tarief', invalidYears && 'afschrijvingsjaren'].filter(
