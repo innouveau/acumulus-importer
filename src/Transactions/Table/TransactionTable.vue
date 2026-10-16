@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AMOUNT_COLUMN, TRANSACTION_COLUMNS } from './table.constants'
 import { useTransactions } from '../useTransactions'
+import Subtotal from './Subtotal/Subtotal.vue'
 import Transaction from '../Transaction/Transaction.vue'
 
 const { visibleRows } = useTransactions()
@@ -17,6 +18,7 @@ const { visibleRows } = useTransactions()
             <tbody>
                 <Transaction v-for="row in visibleRows" :key="row.tx.key" :row="row" />
             </tbody>
+            <Subtotal />
         </table>
     </div>
 </template>
