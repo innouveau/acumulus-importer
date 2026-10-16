@@ -8,7 +8,7 @@ const { testmode, bookSelected } = useBooking()
 </script>
 
 <template>
-    <div class="table-actions">
+    <div class="table-actions sticky">
         <div class="table-filters">
             <SearchField />
             <label><input v-model="hideDone" type="checkbox" /> Verberg afgehandelde</label>

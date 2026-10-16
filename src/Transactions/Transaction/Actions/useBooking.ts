@@ -38,7 +38,7 @@ const resolveIds = (row: Row): BookingIds | string => {
     return { accountid, costheadingid, costcenterid }
 }
 
-const successMessage = (entryid?: string) => (testmode.value ? 'Test geslaagd (niets geboekt)' : `Geboekt, boekstuk ${entryid ?? '?'}`)
+const successMessage = (entryid?: string) => (testmode.value ? 'Test geslaagd (niets geboekt)' : `Geboekt op ${entryid ?? '?'}`)
 
 const book = async (row: Row) => {
     const ids = resolveIds(row)
