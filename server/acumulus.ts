@@ -33,17 +33,29 @@ const buildRequestXml = (env: AcumulusEnv, params: Record<string, unknown>, test
     }) +
     '</myxml>'
 
+const TOO_MANY_REQUESTS = 429
+const MAX_RETRIES = 4
+const RETRY_DELAY_MS = 1000
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Bij 429 (te veel verzoeken) wachten en opnieuw proberen, steeds wat langer
+const post = async (url: string, body: string, attempt = 0): Promise<Response> => {
+    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body })
+    if (response.status !== TOO_MANY_REQUESTS || attempt >= MAX_RETRIES) return response
+    await wait(RETRY_DELAY_MS * 2 ** attempt)
+    return post(url, body, attempt + 1)
+}
+
 // Stuurt een verzoek naar Acumulus en geeft het JSON-antwoord terug
 export const callAcumulus = async (env: AcumulusEnv, resource: string, params: Record<string, unknown>, testmode: boolean) => {
-    const response = await fetch(`${apiUrl(env)}/${resource}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ xmlstring: buildRequestXml(env, params, testmode) }).toString(),
-    })
+    const body = new URLSearchParams({ xmlstring: buildRequestXml(env, params, testmode) }).toString()
+    const response = await post(`${apiUrl(env)}/${resource}`, body)
     const text = await response.text()
     try {
         return JSON.parse(text)
     } catch {
-        return { status: 3, errors: { error: [{ message: `Onverwacht antwoord van Acumulus: ${text.slice(0, 300)}` }] } }
+        const reason = response.status === TOO_MANY_REQUESTS ? 'Acumulus geeft aan dat er te veel verzoeken zijn, probeer het zo opnieuw.' : text.slice(0, 300)
+        return { status: 3, errors: { error: [{ message: `Onverwacht antwoord van Acumulus: ${reason}` }] } }
     }
 }

@@ -5,6 +5,7 @@ import { parseTriodosCsv } from './Upload/parseTriodosCsv'
 import { createRow, isBookable } from './Transaction/transaction.utils'
 import { findMatchingRule } from '../Rules/rule.utils'
 import { matchesSearch } from './TableActions/Search/search.utils'
+import { restoreBookedVat } from './booked.utils'
 import { useBooked } from './useBooked'
 import { useRules } from '../Rules/useRules'
 import { isStrongMatch } from './Transaction/Invoice/invoice.utils'
@@ -12,7 +13,7 @@ import { useInvoices } from './Transaction/Invoice/useInvoices'
 import { BookingType } from './Transaction/BookingType/bookingType.enum'
 
 const { rules, loadRules } = useRules()
-const { isDone } = useBooked()
+const { booked, isDone } = useBooked()
 const { invoices } = useInvoices()
 
 const fileName = ref('')
@@ -32,9 +33,13 @@ const importFile = async (file: File) => {
     // Regels opnieuw ophalen, zodat aanpassingen in data/ meteen meetellen
     await loadRules()
     rows.value = transactions.map((tx) => createRow(tx, findMatchingRule(rules.value, tx)))
+    restoreBooked()
     linkInvoices()
     selected.value = new Set(rows.value.filter((row) => isBookable(row) && !isDone(row)).map((row) => row.tx.key))
 }
+
+// Geboekte rijen krijgen hun btw-instellingen terug, zodat de btw-berekening klopt
+const restoreBooked = () => rows.value.forEach((row) => restoreBookedVat(row, booked.value[row.tx.key]))
 
 // Factuur die al aan een andere rij hangt, kan niet nog eens gekoppeld worden
 const linkedTokens = (except?: Row) =>
@@ -84,6 +89,7 @@ export const useTransactions = () => ({
     search,
     importFile,
     linkInvoices,
+    restoreBooked,
     linkedTokens,
     visibleRows,
     selectedBookable,

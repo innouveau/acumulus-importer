@@ -17,15 +17,17 @@ const view = ref<View>(View.Transactions)
 const { configured, loadConfig, loadPicklists } = useAcumulus()
 const { loadRules } = useRules()
 const { loadSettings } = useSettings()
-const { loadBooked } = useBooked()
+const { loadBooked, backfillBookedVat } = useBooked()
 const { loadInvoices } = useInvoices()
-const { linkInvoices } = useTransactions()
+const { linkInvoices, restoreBooked } = useTransactions()
 
 onMounted(async () => {
     await Promise.all([loadConfig(), loadRules(), loadSettings(), loadBooked()])
     if (!configured.value) return
     await Promise.all([loadPicklists(), loadInvoices()])
     linkInvoices()
+    await backfillBookedVat()
+    restoreBooked()
 })
 </script>
 
